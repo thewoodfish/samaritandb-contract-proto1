@@ -1,4 +1,4 @@
-# DbContract Smart Contract
+# SamaritanDB Smart Contract
 
 This Rust smart contract, `DbContract`, is designed to facilitate the management of a decentralized database for Samaritan OS. The contract uses the Ink! framework to handle various operations related to network nodes, accounts, access control, and subscriptions.
 
