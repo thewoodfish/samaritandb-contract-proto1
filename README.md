@@ -70,7 +70,7 @@ This contract is released under the [Apache License 2.0](LICENSE). Feel free to 
 
 For detailed usage instructions and more information about the contract, please refer to the inline comments within the code.
 
-For any questions or issues, please contact [Algorealm, Inc](hello@algorealm.org) or open a PR.
+For any questions or issues, please contact [Algorealm, Inc](mailto:hello@algorealm.org) or open a PR.
 
 Merci.
 
