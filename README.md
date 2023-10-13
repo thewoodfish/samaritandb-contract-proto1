@@ -12,13 +12,13 @@ This Rust smart contract, `DbContract`, is designed to facilitate the management
 
 ## Contract Overview
 
-Samaritan OS relies on a decentralized database, and `DbContract` acts as the core contract responsible for managing various aspects of the database. Here's an overview of its key features:
+`DbContract` acts as the core contract and source of truth responsible for managing various aspects of the database. Here's an overview of its key features:
 
 - **Database Account Management**: Users can create accounts with their Decentralized Identifiers (DID) and associate data with these accounts.
 
 - **Node Address Management**: This contract keeps track of network node addresses, specifically bootnodes. The list of nodes is limited to ensure efficiency and reliability.
 
-- **Subscription Management**: Users can subscribe to nodes that support specific applications.
+- **Subscription Management**: Individual databases can subscribe to nodes that support specific applications, hence they become part of the data providers for that application.
 
 - **Access Control**: The contract provides restricted access control, allowing or denying specific applications access to data based on DID.
 
@@ -70,5 +70,7 @@ This contract is released under the [Apache License 2.0](LICENSE). Feel free to 
 
 For detailed usage instructions and more information about the contract, please refer to the inline comments within the code.
 
-For any questions or issues, please contact [Algorealm, Inc](https://www.algorealm.com/).
+For any questions or issues, please contact [Algorealm, Inc](hello@algorealm.org) or open a PR.
+
+Merci.
 
