@@ -1,4 +1,4 @@
-# DBContract
+# DbContract
 
 This Rust smart contract, `DbContract`, is designed to facilitate the management of a decentralized database, `SamaritanDB`. The contract uses the Ink! framework to handle various operations related to network nodes, accounts, access control, and subscriptions.
 
