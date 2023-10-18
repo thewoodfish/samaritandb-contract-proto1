@@ -34,7 +34,8 @@ mod db_contract {
         /// Stores nodes that run an applications operations (Gossipsub)
         subscribers: Mapping<DID, Vec<Multiaddr>>,
         /// Data access mapping (user -> restricted applications)
-        restricted: Mapping<DID, Vec<DID>>,
+        /// The tuple is necessary to ensure the origin of the caller to restrict/unrestrict
+        restricted: Mapping<(AccountId, DID), Vec<DID>>,
     }
 
     /// Contract events
@@ -64,7 +65,10 @@ mod db_contract {
     }
 
     #[ink(event)]
-    pub struct EntryNotFound;
+    pub struct EntryNotFound {
+        #[ink(topic)]
+        entry_key: Vec<u8>,
+    }
 
     #[ink(event)]
     pub struct TopicSubscriptionComplete {
@@ -109,6 +113,7 @@ mod db_contract {
         /// Creates an account on the network
         #[ink(message)]
         pub fn new_account(&mut self, did: DID, hashtable_cid: CID, auth_material: Vec<u8>) {
+            // Get the account Id of the
             // The document would be created on demand
             let account = AccountInfo {
                 did_document_uri: Default::default(),
@@ -138,7 +143,7 @@ mod db_contract {
                 // emit event
                 self.env().emit_event(BootNodeAdded { address: addr });
             } else {
-                self.env().emit_event(EntryNotFound {});
+                self.env().emit_event(EntryNotFound { entry_key: addr });
             }
         }
 
@@ -160,7 +165,7 @@ mod db_contract {
                 // emit event
                 self.env().emit_event(BootNodeRemoved { address: addr });
             } else {
-                self.env().emit_event(EntryNotFound {});
+                self.env().emit_event(EntryNotFound { entry_key: addr });
             }
         }
 
@@ -208,7 +213,7 @@ mod db_contract {
                 });
             } else {
                 // emit event indicating the absence of the account
-                self.env().emit_event(EntryNotFound {});
+                self.env().emit_event(EntryNotFound { entry_key: did });
             }
         }
 
@@ -269,10 +274,13 @@ mod db_contract {
         /// Add an application to the restricted list
         #[ink(message)]
         pub fn restrict(&mut self, did: DID, app_did: DID) {
+            // get the caller of the call
+            let caller = Self::env().caller();
+
             // check for existence of user and application
             if self.accounts.contains(&did) {
                 if self.accounts.contains(&app_did) {
-                    let apps_list = if let Some(apps) = self.restricted.get(&did) {
+                    let apps_list = if let Some(apps) = self.restricted.get(&(caller, did.clone())) {
                         let mut apps = apps.clone();
                         apps.push(app_did.clone());
                         apps
@@ -282,7 +290,8 @@ mod db_contract {
                         apps
                     };
 
-                    self.restricted.insert(did.clone(), &apps_list);
+                    self.restricted
+                        .insert((caller.clone(), did.clone()), &apps_list);
 
                     // emit event
                     self.env().emit_event(RestrictApplicationAccess {
@@ -290,24 +299,27 @@ mod db_contract {
                         application_did: app_did,
                     });
                 } else {
-                    self.env().emit_event(EntryNotFound {});
+                    self.env().emit_event(EntryNotFound { entry_key: app_did });
                 }
             } else {
-                self.env().emit_event(EntryNotFound {});
+                self.env().emit_event(EntryNotFound { entry_key: did });
             }
         }
 
         /// Unrestrict an application's access to user data
         #[ink(message)]
         pub fn unrestrict(&mut self, did: DID, app_did: DID) {
-            if let Some(apps) = self.restricted.get(&did) {
+            // get the caller of the call
+            let caller = Self::env().caller();
+
+            if let Some(apps) = self.restricted.get(&(caller, did.clone())) {
                 let restricted_apps = apps
                     .iter()
                     .cloned()
                     .filter(|did| *did != app_did)
                     .collect::<Vec<_>>();
 
-                self.restricted.insert(&did, &restricted_apps);
+                self.restricted.insert(&(caller, did.clone()), &restricted_apps);
 
                 // emit event
                 self.env().emit_event(UnrestrictApplicationAccess {
@@ -315,14 +327,16 @@ mod db_contract {
                     application_did: app_did,
                 });
             } else {
-                self.env().emit_event(EntryNotFound {});
+                self.env().emit_event(EntryNotFound { entry_key: did });
             }
         }
 
         /// Check if an application is restricted
-        #[ink(message)]
-        pub fn is_restricted(&self, did: DID, app_did: DID) -> bool {
-            if let Some(entry) = self.restricted.get(&did) {
+        fn is_restricted(&self, did: DID, app_did: DID) -> bool {
+            // get the caller of the call
+            let caller = Self::env().caller();
+
+            if let Some(entry) = self.restricted.get(&(caller, did)) {
                 // check if the application is part of our restriction list
                 entry.contains(&app_did)
             } else {
@@ -442,7 +456,6 @@ mod db_contract {
 
             // check for restrictions
             assert!(!db.is_restricted(did.clone(), app_did.clone()));
-
         }
     }
 }
