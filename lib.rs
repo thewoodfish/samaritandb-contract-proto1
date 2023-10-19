@@ -33,9 +33,8 @@ mod db_contract {
         accounts: Mapping<DID, AccountInfo>,
         /// Stores nodes that run an applications operations (Gossipsub)
         subscribers: Mapping<DID, Vec<Multiaddr>>,
-        /// Data access mapping (user -> restricted applications)
-        /// The tuple is necessary to ensure the origin of the transactioner to restrict/unrestrict
-        restricted: Mapping<(AccountId, DID), Vec<DID>>,
+        /// Data access mapping application to users
+        restricted: Mapping<DID, Vec<DID>>,
     }
 
     /// Contract events
@@ -87,14 +86,16 @@ mod db_contract {
     #[ink(event)]
     pub struct RestrictApplicationAccess {
         #[ink(topic)]
-        did: DID,
+        user_did: DID,
+        #[ink(topic)]
         application_did: DID,
     }
 
     #[ink(event)]
     pub struct UnrestrictApplicationAccess {
         #[ink(topic)]
-        did: DID,
+        user_did: DID,
+        #[ink(topic)]
         application_did: DID,
     }
 
@@ -273,75 +274,85 @@ mod db_contract {
 
         /// Add an application to the restricted list
         #[ink(message)]
-        pub fn restrict(&mut self, did: DID, app_did: DID) {
-            // get the caller of the transaction
-            let caller = Self::env().caller();
-
+        pub fn restrict(&mut self, user_did: DID, app_did: DID) {
             // check for existence of user and application
-            if self.accounts.contains(&did) {
+            if self.accounts.contains(&user_did) {
                 if self.accounts.contains(&app_did) {
-                    let apps_list = if let Some(apps) = self.restricted.get(&(caller, did.clone())) {
-                        let mut apps = apps.clone();
-                        apps.push(app_did.clone());
-                        apps
+                    let users_list = if let Some(users) = self.restricted.get(&app_did) {
+                        let mut users = users.clone();
+                        users.push(user_did.clone());
+                        users
                     } else {
-                        let mut apps = Vec::new();
-                        apps.push(app_did.clone());
-                        apps
+                        let mut users = Vec::new();
+                        users.push(user_did.clone());
+                        users
                     };
 
-                    self.restricted
-                        .insert((caller.clone(), did.clone()), &apps_list);
+                    self.restricted.insert(app_did.clone(), &users_list);
 
                     // emit event
                     self.env().emit_event(RestrictApplicationAccess {
-                        did,
+                        user_did,
                         application_did: app_did,
                     });
                 } else {
-                    self.env().emit_event(EntryNotFound { entry_value: app_did });
+                    self.env().emit_event(EntryNotFound {
+                        entry_value: app_did,
+                    });
                 }
             } else {
-                self.env().emit_event(EntryNotFound { entry_value: did });
+                self.env().emit_event(EntryNotFound {
+                    entry_value: user_did,
+                });
             }
         }
 
         /// Unrestrict an application's access to user data
         #[ink(message)]
-        pub fn unrestrict(&mut self, did: DID, app_did: DID) {
-            // get the caller of the transaction
-            let caller = Self::env().caller();
-
-            if let Some(apps) = self.restricted.get(&(caller, did.clone())) {
-                let restricted_apps = apps
+        pub fn unrestrict(&mut self, user_did: DID, app_did: DID) {
+            if let Some(users) = self.restricted.get(&app_did) {
+                let users_list = users
                     .iter()
                     .cloned()
-                    .filter(|did| *did != app_did)
+                    .filter(|did| *did != user_did)
                     .collect::<Vec<_>>();
 
-                self.restricted.insert(&(caller, did.clone()), &restricted_apps);
+                self.restricted.insert(&app_did, &users_list);
 
                 // emit event
                 self.env().emit_event(UnrestrictApplicationAccess {
-                    did,
+                    user_did,
                     application_did: app_did,
                 });
             } else {
-                self.env().emit_event(EntryNotFound { entry_value: did });
+                self.env().emit_event(EntryNotFound {
+                    entry_value: app_did,
+                });
             }
         }
 
         /// Check if an application is restricted
         fn is_restricted(&self, did: DID, app_did: DID) -> bool {
-            // get the caller of the transaction
-            let caller = Self::env().caller();
-
-            if let Some(entry) = self.restricted.get(&(caller, did)) {
+            if let Some(entry) = self.restricted.get(&did) {
                 // check if the application is part of our restriction list
                 entry.contains(&app_did)
             } else {
                 false
             }
+        }
+
+        /// Fetch users that have restricted applications
+        #[ink(message)]
+        pub fn get_restriction_list(&self, app_did: DID) -> Vec<u8> {
+            if let Some(users) = self.restricted.get(&app_did) {
+                let separator = b"$$$".to_vec();
+                return users
+                    .iter()
+                    .flat_map(|vector| vector.iter().chain(separator.iter()))
+                    .copied()
+                    .collect();
+            }
+            Vec::new()
         }
     }
 
