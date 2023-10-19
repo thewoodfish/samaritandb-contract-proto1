@@ -34,7 +34,7 @@ mod db_contract {
         /// Stores nodes that run an applications operations (Gossipsub)
         subscribers: Mapping<DID, Vec<Multiaddr>>,
         /// Data access mapping (user -> restricted applications)
-        /// The tuple is necessary to ensure the origin of the caller to restrict/unrestrict
+        /// The tuple is necessary to ensure the origin of the transactioner to restrict/unrestrict
         restricted: Mapping<(AccountId, DID), Vec<DID>>,
     }
 
@@ -67,7 +67,7 @@ mod db_contract {
     #[ink(event)]
     pub struct EntryNotFound {
         #[ink(topic)]
-        entry_key: Vec<u8>,
+        entry_value: Vec<u8>,
     }
 
     #[ink(event)]
@@ -143,7 +143,7 @@ mod db_contract {
                 // emit event
                 self.env().emit_event(BootNodeAdded { address: addr });
             } else {
-                self.env().emit_event(EntryNotFound { entry_key: addr });
+                self.env().emit_event(EntryNotFound { entry_value: addr });
             }
         }
 
@@ -165,7 +165,7 @@ mod db_contract {
                 // emit event
                 self.env().emit_event(BootNodeRemoved { address: addr });
             } else {
-                self.env().emit_event(EntryNotFound { entry_key: addr });
+                self.env().emit_event(EntryNotFound { entry_value: addr });
             }
         }
 
@@ -213,7 +213,7 @@ mod db_contract {
                 });
             } else {
                 // emit event indicating the absence of the account
-                self.env().emit_event(EntryNotFound { entry_key: did });
+                self.env().emit_event(EntryNotFound { entry_value: did });
             }
         }
 
@@ -274,7 +274,7 @@ mod db_contract {
         /// Add an application to the restricted list
         #[ink(message)]
         pub fn restrict(&mut self, did: DID, app_did: DID) {
-            // get the caller of the call
+            // get the caller of the transaction
             let caller = Self::env().caller();
 
             // check for existence of user and application
@@ -299,17 +299,17 @@ mod db_contract {
                         application_did: app_did,
                     });
                 } else {
-                    self.env().emit_event(EntryNotFound { entry_key: app_did });
+                    self.env().emit_event(EntryNotFound { entry_value: app_did });
                 }
             } else {
-                self.env().emit_event(EntryNotFound { entry_key: did });
+                self.env().emit_event(EntryNotFound { entry_value: did });
             }
         }
 
         /// Unrestrict an application's access to user data
         #[ink(message)]
         pub fn unrestrict(&mut self, did: DID, app_did: DID) {
-            // get the caller of the call
+            // get the caller of the transaction
             let caller = Self::env().caller();
 
             if let Some(apps) = self.restricted.get(&(caller, did.clone())) {
@@ -327,13 +327,13 @@ mod db_contract {
                     application_did: app_did,
                 });
             } else {
-                self.env().emit_event(EntryNotFound { entry_key: did });
+                self.env().emit_event(EntryNotFound { entry_value: did });
             }
         }
 
         /// Check if an application is restricted
         fn is_restricted(&self, did: DID, app_did: DID) -> bool {
-            // get the caller of the call
+            // get the caller of the transaction
             let caller = Self::env().caller();
 
             if let Some(entry) = self.restricted.get(&(caller, did)) {
