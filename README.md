@@ -64,6 +64,10 @@ The contract offers several functions to interact with its features:
 
 The contract includes a set of unit tests to ensure that its functions work as expected. The tests cover account creation, subscription flow, adding/removing node addresses and managing user data access control.
 
+## Database
+
+For an in-depth analysis of when and how the contract functions are invoked during database operations, please refer to the complete database code available [here](https://github.com/algorealmInc/SamaritanDB).
+
 ## License
 
 This contract is released under the [Apache License 2.0](LICENSE). Feel free to use and modify it in your projects.
