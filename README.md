@@ -70,7 +70,7 @@ For an in-depth analysis of when and how the contract functions are invoked duri
 
 ## Interact
 
-You can interact with the contract publicly here at the [Contracts-UI](https://contracts-ui.substrate.io/contract/5HkCfhUNU1c4UXzxC4WiiyojDbzbH1KMgkHrEw11ez9HAg5y)
+You can interact with the contract publicly here at the [Contracts-UI](https://contracts-ui.substrate.io/contract/5HkCfhUNU1c4UXzxC4WiiyojDbzbH1KMgkHrEw11ez9HAg5y).
 
 ## License
 
