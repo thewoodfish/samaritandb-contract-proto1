@@ -111,8 +111,14 @@ mod db_contract {
             }
         }
 
+        /// Checks if a DID exists
+        #[ink(message, payable)]
+        pub fn check_did_existence(&self, did: DID) -> bool {
+            self.accounts.contains(&did)
+        }
+
         /// Creates an account on the network
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn new_account(&mut self, did: DID, hashtable_cid: CID, auth_material: Vec<u8>) {
             // Get the account Id of the
             // The document would be created on demand
@@ -130,7 +136,7 @@ mod db_contract {
 
         /// Adds your network address to the list of nodes using FIFO.
         /// This helps to eventually remove nodes that may exit without the proper bookkeeping
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn add_address(&mut self, addr: Multiaddr) {
             // Check if the address already exists in the nodes vector
             if !self.nodes.contains(&addr) {
@@ -149,7 +155,7 @@ mod db_contract {
         }
 
         /// Remove node address from bootnodes
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn remove_address(&mut self, addr: Multiaddr) {
             // Check if the address already exists in the nodes vector
             if self.nodes.contains(&addr) {
@@ -171,7 +177,7 @@ mod db_contract {
         }
 
         /// Retrieves the list of bootnodes available
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn get_node_addresses(&self) -> Vec<u8> {
             self.nodes
                 .iter()
@@ -186,7 +192,7 @@ mod db_contract {
         }
 
         /// Retrieves the hashtable CID of an account
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn get_account_ht_cid(&self, did: DID, auth_material: Vec<u8>) -> Vec<u8> {
             if let Some(account_info) = self.accounts.get(&did) {
                 if account_info.auth_material == auth_material {
@@ -200,7 +206,7 @@ mod db_contract {
         }
 
         /// Updates the hashtable CID of an account
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn update_account_ht_cid(&mut self, did: DID, ht_cid: Vec<u8>) {
             if let Some(account) = self.accounts.get(&did) {
                 let mut new_account = account.clone();
@@ -219,7 +225,7 @@ mod db_contract {
         }
 
         /// Subscribe to join nodes supporting application
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn subscribe_node(&mut self, did: DID, addr: Multiaddr) {
             if let Some(subs) = self.subscribers.get(&did) {
                 if !subs.contains(&addr) {
@@ -241,7 +247,7 @@ mod db_contract {
         }
 
         /// Stop supporting application
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn unsubscribe_node(&mut self, did: DID, address: Multiaddr) {
             if let Some(nodes) = self.subscribers.get(&did) {
                 let filtered_nodes = nodes
@@ -258,7 +264,7 @@ mod db_contract {
         }
 
         /// Get all nodes supporting an application
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn get_subscribers(&mut self, did: DID) -> Vec<u8> {
             if let Some(nodes) = self.subscribers.get(&did) {
                 let separator = b"$$$".to_vec();
@@ -273,7 +279,7 @@ mod db_contract {
         }
 
         /// Add an application to the restricted list
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn restrict(&mut self, user_did: DID, app_did: DID) {
             // check for existence of user and application
             if self.accounts.contains(&user_did) {
@@ -308,7 +314,7 @@ mod db_contract {
         }
 
         /// Unrestrict an application's access to user data
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn unrestrict(&mut self, user_did: DID, app_did: DID) {
             if let Some(users) = self.restricted.get(&app_did) {
                 let users_list = users
@@ -342,7 +348,7 @@ mod db_contract {
         }
 
         /// Fetch users that have restricted applications
-        #[ink(message)]
+        #[ink(message, payable)]
         pub fn get_restriction_list(&self, app_did: DID) -> Vec<u8> {
             if let Some(users) = self.restricted.get(&app_did) {
                 let separator = b"$$$".to_vec();
