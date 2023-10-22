@@ -1,6 +1,6 @@
 # DbContract
 
-This Rust smart contract, `DbContract`, is designed to facilitate the management of a decentralized database, `SamaritanDB`. SamaritanDB is a blockchain-based data sovereignty solution that empowers users to have full control over their data input into applications running on SamaritanDB. This repository contains the core contract that underpins SamaritanDB. The contract uses the ink! smart contract language to handle various operations related to network nodes, accounts, access control, and subscriptions.
+This Rust smart contract, `DbContract`, is designed to facilitate the management of a decentralized database, `SamaritanDB`. SamaritanDB is a blockchain-based data sovereignty solution that empowers users to have full control over their data input into applications across the internet running on the database. This repository contains the core contract that underpins SamaritanDB. The contract uses the ink! smart contract language to handle various operations related to network nodes, accounts, access control, and subscriptions.
 
 ## Table of Contents
 
