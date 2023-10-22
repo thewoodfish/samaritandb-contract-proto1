@@ -129,7 +129,7 @@ The contract offers several functions to interact with its features:
 
 - **`get_restriction_list`**: Retrieves a list of users who have restricted access to a specific application. The `DbContract` smart contract utilizes this function to provide transparency about access restrictions.
 
-    - **Parameters`**`
+    - **Parameters**
 
     - `app_did` (Decentralized Identifier): The Decentralized Identifier (DID) of the application for which you want to retrieve the list of restricted users.
 
