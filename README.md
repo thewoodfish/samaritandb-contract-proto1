@@ -145,7 +145,7 @@ The contract offers several functions to interact with its features:
 
     This function is a valuable tool for querying the list of users who have restricted access to an application on the SamaritanDB network.
 
-- **Testing**
+## Testing
 
 The contract includes a set of unit tests to ensure that its functions work as expected. The tests cover account creation, subscription flow, adding/removing node addresses and managing user data access control.
 
