@@ -127,9 +127,7 @@ The contract offers several functions to interact with its features:
 
 - `unrestrict`: Remove an application from the restricted list, allowing its data access.
 
-- **get_restriction_list**
-
-Retrieves a list of users who have restricted access to a specific application. The `DbContract` smart contract utilizes this function to provide transparency about access restrictions.
+- **get_restriction_list**: Retrieves a list of users who have restricted access to a specific application. The `DbContract` smart contract utilizes this function to provide transparency about access restrictions.
 
 - **Parameters**
 
