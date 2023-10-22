@@ -44,44 +44,52 @@ The contract defines several custom data structures:
 ## Contract Events
 
 - **AccountCreated:**
+
   - Emits when a new account is created on the network.
   - Parameters:
     - `did`: Decentralized Identifier (DID) of the created account.
 
 - **BootNodeAdded:**
+
   - Emits when a bootnode is added to the network.
   - Parameters:
     - `address`: The address of the added bootnode.
 
 - **BootNodeRemoved:**
+
   - Emits when a bootnode is removed from the network.
   - Parameters:
     - `address`: The address of the removed bootnode.
 
 - **HashTableAddressUpdated:**
+
   - Emits when the IPFS address for an account's hash table is updated.
   - Parameters:
     - `did`: The Decentralized Identifier (DID) associated with the account.
     - `ipfs_address`: The updated IPFS content identifier (CID).
 
 - **EntryNotFound:**
+
   - Emits when a requested entry is not found.
   - Parameters:
     - `entry_value`: The value of the entry that was not found.
 
 - **TopicSubscriptionComplete:**
+
   - Emits when the subscription to a topic is successfully completed.
   - Parameters:
     - `did`: The Decentralized Identifier (DID) of the subscribing user or application.
     - `node`: The address of the node where the topic was subscribed.
 
 - **TopicUnsubscriptionComplete:**
+
   - Emits when the unsubscription from a topic is successfully completed.
   - Parameters:
     - `did`: The Decentralized Identifier (DID) of the unsubscribing user or application.
     - `node`: The address of the node from which the unsubscription occurred.
 
 - **RestrictApplicationAccess:**
+
   - Emits when a user restricts access to an application.
   - Parameters:
     - `user_did`: The Decentralized Identifier (DID) of the user.
@@ -92,7 +100,6 @@ The contract defines several custom data structures:
   - Parameters:
     - `user_did`: The Decentralized Identifier (DID) of the user.
     - `application_did`: The Decentralized Identifier (DID) of the unrestricted application.
-
 
 ## Contract Functions
 
@@ -119,6 +126,24 @@ The contract offers several functions to interact with its features:
 - `restrict`: Add an application to the restricted list, limiting its data access to a specific user data.
 
 - `unrestrict`: Remove an application from the restricted list, allowing its data access.
+
+- `get_restriction_list`: Retrieves a list of users who have restricted access to a specific application. The `DbContract` smart contract utilizes this function to provide transparency about access restrictions.
+
+### Parameters
+
+- `app_did` (Decentralized Identifier): The Decentralized Identifier (DID) of the application for which you want to retrieve the list of restricted users.
+
+### Return Value
+
+- `Vec<u8>`: A byte vector containing the list of restricted users' Decentralized Identifiers (DIDs) separated by a delimiter. Each user's DID is followed by `$$$` as a separator.
+
+### Usage
+
+- When calling this function, provide the `app_did` as a parameter, which represents the application you're interested in.
+- If the application has restricted access from users, the function will return a `Vec<u8>` containing the DIDs of those restricted users. The DIDs are separated by `$$$`.
+- If no users have restricted access to the application or the application is not found, an empty `Vec<u8>` is returned.
+
+This function is a valuable tool for querying the list of users who have restricted access to an application on the SamaritanDB network.
 
 ## Testing
 
