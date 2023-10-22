@@ -155,7 +155,7 @@ For an in-depth analysis of when and how the contract functions are invoked duri
 
 ## Interact
 
-You can interact with the contract publicly here at the [Contracts-UI](https://contracts-ui.substrate.io/contract/5HkCfhUNU1c4UXzxC4WiiyojDbzbH1KMgkHrEw11ez9HAg5y).
+You can interact with the contract publicly here at the [Contracts-UI](https://contracts-ui.substrate.io/contract/5GpVUDUCJtMcXtwocMuD89JXZ94BNdxhdn3MaqBRXmo5BZFH) and also you can view some of the functions called here in [the Tic-Tak-Toe game](https://github.com/thewoodfish/Tic-Tac-Toe).
 
 ## License
 
