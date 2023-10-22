@@ -129,15 +129,15 @@ The contract offers several functions to interact with its features:
 
 - `get_restriction_list`: Retrieves a list of users who have restricted access to a specific application. The `DbContract` smart contract utilizes this function to provide transparency about access restrictions.
 
-### Parameters
+- **Parameters**
 
 - `app_did` (Decentralized Identifier): The Decentralized Identifier (DID) of the application for which you want to retrieve the list of restricted users.
 
-### Return Value
+- **Return Value**
 
 - `Vec<u8>`: A byte vector containing the list of restricted users' Decentralized Identifiers (DIDs) separated by a delimiter. Each user's DID is followed by `$$$` as a separator.
 
-### Usage
+- **Usage**
 
 - When calling this function, provide the `app_did` as a parameter, which represents the application you're interested in.
 - If the application has restricted access from users, the function will return a `Vec<u8>` containing the DIDs of those restricted users. The DIDs are separated by `$$$`.
@@ -145,7 +145,7 @@ The contract offers several functions to interact with its features:
 
 This function is a valuable tool for querying the list of users who have restricted access to an application on the SamaritanDB network.
 
-## Testing
+- **Testing**
 
 The contract includes a set of unit tests to ensure that its functions work as expected. The tests cover account creation, subscription flow, adding/removing node addresses and managing user data access control.
 
