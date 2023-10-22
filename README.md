@@ -8,6 +8,7 @@ This Rust smart contract, `DbContract`, is designed to facilitate the management
 - [Usage](#usage)
 - [Contract Overview](#contract-overview)
 - [Data Structures](#data-structures)
+- [Contract Events](#contract-events)
 - [Contract Functions](#contract-functions)
 - [Testing](#testing)
 - [License](#license)
@@ -22,9 +23,9 @@ The `DbContract` serves as the central hub and primary source of authority for g
 
 - **Database Account Management**: Users have the ability to establish accounts using their Decentralized Identifiers (DID) and link data to these accounts.
 
-- **Node Address Administration**: This contract maintains a record of network node addresses, particularly bootnodes. The node list is currently capped for performance and reliability considerations. Note that this restriction will be removed in the future.
+- **Node Address Management:** This contract is responsible for maintaining a record of network node addresses, especially bootnodes. Currently, the node list is capped to ensure optimal performance and reliability. It's worth noting that this capability will be phased out from the contract in the future.
 
-- **Subscription Management**: Databases can individually subscribe to nodes that support specific applications, thereby integrating themselves as data providers for those applications. This subscription mechanism is utilized in `gossipsub` operations and will eventually be deprecated from the contract.
+- **Subscription Management:** Databases have the ability to individually subscribe to nodes that support specific applications, effectively becoming data providers for those applications. This subscription mechanism is utilized in `gossipsub` and is facilitated by the contract. However, please be aware that it will eventually be deprecated from the contract.
 
 - **Access Control**: Access control is a fundamental feature of the contract. It empowers the contract to oversee and regulate access permissions, granting or denying specific applications access to distinct user data distributed across the network, all based on the unique DID identifiers.
 
@@ -39,6 +40,59 @@ The contract defines several custom data structures:
 - `DID`: Represents a Decentralized Identifier.
 
 - `CID`: Represents an IPFS content identifier.
+
+## Contract Events
+
+- **AccountCreated:**
+  - Emits when a new account is created on the network.
+  - Parameters:
+    - `did`: Decentralized Identifier (DID) of the created account.
+
+- **BootNodeAdded:**
+  - Emits when a bootnode is added to the network.
+  - Parameters:
+    - `address`: The address of the added bootnode.
+
+- **BootNodeRemoved:**
+  - Emits when a bootnode is removed from the network.
+  - Parameters:
+    - `address`: The address of the removed bootnode.
+
+- **HashTableAddressUpdated:**
+  - Emits when the IPFS address for an account's hash table is updated.
+  - Parameters:
+    - `did`: The Decentralized Identifier (DID) associated with the account.
+    - `ipfs_address`: The updated IPFS content identifier (CID).
+
+- **EntryNotFound:**
+  - Emits when a requested entry is not found.
+  - Parameters:
+    - `entry_value`: The value of the entry that was not found.
+
+- **TopicSubscriptionComplete:**
+  - Emits when the subscription to a topic is successfully completed.
+  - Parameters:
+    - `did`: The Decentralized Identifier (DID) of the subscribing user or application.
+    - `node`: The address of the node where the topic was subscribed.
+
+- **TopicUnsubscriptionComplete:**
+  - Emits when the unsubscription from a topic is successfully completed.
+  - Parameters:
+    - `did`: The Decentralized Identifier (DID) of the unsubscribing user or application.
+    - `node`: The address of the node from which the unsubscription occurred.
+
+- **RestrictApplicationAccess:**
+  - Emits when a user restricts access to an application.
+  - Parameters:
+    - `user_did`: The Decentralized Identifier (DID) of the user.
+    - `application_did`: The Decentralized Identifier (DID) of the restricted application.
+
+- **UnrestrictApplicationAccess:**
+  - Emits when a user lifts access restrictions from an application.
+  - Parameters:
+    - `user_did`: The Decentralized Identifier (DID) of the user.
+    - `application_did`: The Decentralized Identifier (DID) of the unrestricted application.
+
 
 ## Contract Functions
 
